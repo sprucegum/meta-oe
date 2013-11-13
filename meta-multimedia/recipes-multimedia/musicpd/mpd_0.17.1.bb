@@ -1,20 +1,14 @@
 DESCRIPTION = "Music Player Daemon"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
-HOMEPAGE ="http://sourceforge.net/projects/musicpd"
 
 DEPENDS = "alsa-lib libsamplerate0 libsndfile1 libvorbis libogg faad2 ffmpeg curl sqlite bzip2 pulseaudio \
            ${@base_conditional('ENTERPRISE_DISTRO', '1', '', 'libmad lame libid3tag', d)}"
 
-PR = "r4"
-
-SRC_URI = " \
-    ${SOURCEFORGE_MIRROR}/musicpd/${PN}/${PV}/${PN}-${PV}.tar.bz2 \
-    file://mpd.conf.in \
-"
-
-SRC_URI[md5sum] = "da3f3d6617a877192db4c6f53504cd38"
-SRC_URI[sha256sum] = "b18cdb1b779ca2ab323e212a0af4a567b7da4881a4e96868a8979bdfdbe7c2e8"
+SRCREV = "release-0.17.1"
+PR = "r5"
+SRC_URI = "git://git.musicpd.org/master/mpd.git;tags=release-${PV}"
+S = "${WORKDIR}/git"
 
 inherit autotools useradd systemd
 
@@ -29,7 +23,7 @@ do_install_append() {
     chown mpd:mpd ${D}/${localstatedir}/lib/mpd/music
 
     install -d ${D}/${sysconfdir}
-    install -m 644 ${WORKDIR}/mpd.conf.in ${D}/${sysconfdir}/mpd.conf
+    install -m 644 ${WORKDIR}/git/doc/mpd.conf.5 ${D}/${sysconfdir}/mpd.conf
     sed -i \
         -e 's|%music_directory%|${localstatedir}/lib/mpd/music|' \
         -e 's|%playlist_directory%|${localstatedir}/lib/mpd/playlists|' \
